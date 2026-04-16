@@ -10,7 +10,7 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com/your-username/your-repo.git'
+                git 'https://github.com/Abiwarshini/Event-Booking-System.git'
             }
         }
 
@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Run with Docker Compose (Optional)') {
+        stage('Run Containers') {
             steps {
                 sh 'docker-compose up -d'
             }
