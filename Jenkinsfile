@@ -3,14 +3,14 @@ pipeline {
 
     environment {
         FRONTEND_IMAGE = "abiwarshini/frontend-app"
-        BACKEND_IMAGE = "abiwarshini/backend-app"
+        BACKEND_IMAGE  = "abiwarshini/backend-app"
     }
 
     stages {
 
         stage('Checkout Code') {
             steps {
-                echo "Code already checked out by Jenkins"
+                echo "Code pulled from GitHub"
             }
         }
 
@@ -28,16 +28,20 @@ pipeline {
 
         stage('Login to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    bat "echo %PASS% | docker login -u %USER% --password-stdin"
+                withCredentials([string(credentialsId: 'docker-cred', variable: 'PASS')]) {
+                    bat "echo %PASS% | docker login -u abiwarshini --password-stdin"
                 }
             }
         }
 
         stage('Push Images') {
             steps {
-                bat "docker push %FRONTEND_IMAGE%:latest"
-                bat "docker push %BACKEND_IMAGE%:latest"
+                script {
+                    retry(3) {
+                        bat "docker push %FRONTEND_IMAGE%:latest"
+                        bat "docker push %BACKEND_IMAGE%:latest"
+                    }
+                }
             }
         }
 
@@ -45,6 +49,15 @@ pipeline {
             steps {
                 bat "docker-compose up -d"
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline SUCCESS 🎉"
+        }
+        failure {
+            echo "Pipeline FAILED ❌ Check logs"
         }
     }
 }
