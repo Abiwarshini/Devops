@@ -10,41 +10,40 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                // Jenkins will automatically pull from GitHub SCM
                 echo "Code already checked out by Jenkins"
             }
         }
 
         stage('Build Frontend Image') {
             steps {
-                script {
-                    docker.build("${FRONTEND_IMAGE}:latest", "./frontend")
-                }
+                sh "docker build -t ${FRONTEND_IMAGE}:latest ./frontend"
             }
         }
 
         stage('Build Backend Image') {
             steps {
-                script {
-                    docker.build("${BACKEND_IMAGE}:latest", "./backend")
+                sh "docker build -t ${BACKEND_IMAGE}:latest ./backend"
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh "echo $PASS | docker login -u $USER --password-stdin"
                 }
             }
         }
 
         stage('Push Images') {
             steps {
-                script {
-                    docker.withRegistry('', 'docker-cred') {
-                        docker.image("${FRONTEND_IMAGE}:latest").push()
-                        docker.image("${BACKEND_IMAGE}:latest").push()
-                    }
-                }
+                sh "docker push ${FRONTEND_IMAGE}:latest"
+                sh "docker push ${BACKEND_IMAGE}:latest"
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker-compose up -d'
+                sh "docker-compose up -d"
             }
         }
     }
