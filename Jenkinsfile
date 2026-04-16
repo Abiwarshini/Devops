@@ -8,16 +8,24 @@ pipeline {
 
     stages {
 
-        stage('Clone Code') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/Abiwarshini/Event-Booking-System.git'
+                // Jenkins will automatically pull from GitHub SCM
+                echo "Code already checked out by Jenkins"
             }
         }
 
-        stage('Build Images') {
+        stage('Build Frontend Image') {
             steps {
                 script {
                     docker.build("${FRONTEND_IMAGE}:latest", "./frontend")
+                }
+            }
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                script {
                     docker.build("${BACKEND_IMAGE}:latest", "./backend")
                 }
             }
@@ -34,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Run Containers') {
+        stage('Deploy with Docker Compose') {
             steps {
                 sh 'docker-compose up -d'
             }
