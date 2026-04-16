@@ -16,34 +16,34 @@ pipeline {
 
         stage('Build Frontend Image') {
             steps {
-                sh "docker build -t ${FRONTEND_IMAGE}:latest ./frontend"
+                bat "docker build -t %FRONTEND_IMAGE%:latest ./frontend"
             }
         }
 
         stage('Build Backend Image') {
             steps {
-                sh "docker build -t ${BACKEND_IMAGE}:latest ./backend"
+                bat "docker build -t %BACKEND_IMAGE%:latest ./backend"
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                    bat "echo %PASS% | docker login -u %USER% --password-stdin"
                 }
             }
         }
 
         stage('Push Images') {
             steps {
-                sh "docker push ${FRONTEND_IMAGE}:latest"
-                sh "docker push ${BACKEND_IMAGE}:latest"
+                bat "docker push %FRONTEND_IMAGE%:latest"
+                bat "docker push %BACKEND_IMAGE%:latest"
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh "docker-compose up -d"
+                bat "docker-compose up -d"
             }
         }
     }
