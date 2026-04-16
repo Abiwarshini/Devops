@@ -26,13 +26,14 @@ pipeline {
             }
         }
 
+       
         stage('Login to Docker Hub') {
-            steps {
-                withCredentials([string(credentialsId: 'docker-cred', variable: 'PASS')]) {
-                    bat "echo %PASS% | docker login -u abiwarshini --password-stdin"
-                }
-            }
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+            bat 'echo %PASS% | docker login -u %USER% --password-stdin'
         }
+    }
+}
 
         stage('Push Images') {
             steps {
