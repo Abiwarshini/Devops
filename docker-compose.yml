@@ -2,7 +2,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "5000:5000"
+      - "5001:5000"   # changed
     depends_on:
       - db
     environment:
@@ -11,14 +11,14 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "3002:3000"   # changed
     depends_on:
       - backend
 
   db:
     image: mongo
     ports:
-      - "27018:27017"   # 🔥 changed port here
+      - "27018:27017"   # already changed
     volumes:
       - mongo_data:/data/db
 
