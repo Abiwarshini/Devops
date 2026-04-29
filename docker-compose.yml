@@ -1,9 +1,6 @@
-version: "3.8"
-
 services:
   backend:
     build: ./backend
-    container_name: backend_container
     ports:
       - "5000:5000"
     depends_on:
@@ -13,7 +10,6 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: frontend_container
     ports:
       - "3000:3000"
     depends_on:
@@ -21,7 +17,6 @@ services:
 
   db:
     image: mongo
-    container_name: mongo_container
     ports:
       - "27017:27017"
     volumes:
