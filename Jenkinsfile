@@ -26,14 +26,13 @@ pipeline {
             }
         }
 
-       
         stage('Login to Docker Hub') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-            bat 'echo %PASS% | docker login -u %USER% --password-stdin'
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    bat 'echo %PASS% | docker login -u %USER% --password-stdin'
+                }
+            }
         }
-    }
-}
 
         stage('Push Images') {
             steps {
@@ -48,7 +47,7 @@ pipeline {
 
         stage('Deploy with Docker Compose') {
             steps {
-                bat "docker-compose up -d"
+                bat "docker-compose up -d --build"
             }
         }
     }
